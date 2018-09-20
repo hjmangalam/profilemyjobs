@@ -1,0 +1,412 @@
+#!/bin/bash
+# Harry Mangalam <hjmangalam@gmail.com> 07-28-2018
+# this script is intended to work in conjunction with the wrapper script
+# 'pmj' to submit applications in batch mode ia a scheduler, altho it can 
+# be run independently as well.
+
+# cd ~/bin; scp profilemyjobs pmj moo:~; moo 'scp profilemyjobs pmj hmangala@hpcs:/data/hpc/bin'
+# TODO - add swap, to plot, 
+# add comment line to include in log header
+# Hmm - integrate with parsyncfp?  That would be pretty cool. use '--pmj '
+# (and then take PERIOD from pfp's CHECKPERIOD)
+# user from USER, interface from interface, and then just start it in the background, 
+# with the gnuplot coming forward
+# emit warning if the requested time PERIOD is significantly different than the real time period.
+
+# set static initial params
+cyc=0            # cycle count
+PLOT="0"         # to plot or not to plot
+mb=1048576       # MB in bytes
+kb=1024          # kb in bytes
+user=$USER       # define the user
+PRINTHEADERS=33  # print headers (to stderr) every this # of lines.
+HELP=FALSE       # want help?
+PERIOD=5         # cycle every PERIOD seconds.
+COMMENT=""       # comment string disappears if not defined
+IFACE=""         # network interface to monitor
+PRE=10           # how many cycles of data collection should precede the command
+POST=10          # how many cycles of data collection should follow the commands end
+CYCLECNT=0       # Number of cycles of data collection 
+skiprl=0         # if 1, skip the rssloop
+skipcyc=5        # cycles to skip
+skip4=$skipcyc   # if skiprl gets set to 1, skip for this number of cycles
+
+# set dynamic/per run variables
+ds=`date +"%F,%T"| sed 's/:/./g'`    # datestamp for suffix
+suffix=${user}_${ds}  # total suffix to add to log.
+LOG="profile.log_${suffix}"     # LOG name
+iotmp="profile.iotmp" # where to put the temp iotop data
+
+function usage()
+{
+   cat << ENDHELP | less
+profilemyjobs ver: 1.1.2, Sept 6th, 2018, hjmangalam@gmail.com
+(for more info, see: https://goo.gl/hSz8bf)
+
+Usage: profilemyjobs options  
+NB: This script runs until it is explicitly killed
+(usually by the associated 'pmj' wrapper)
+
+Options: where [i]=integer; [s]=string
+
+-u or --user [s] (\$USER) login name of the user to profile
+-c or --comment [s] comment to add to the logfile header and to the plot
+-p or --period [i; secs] (15) sample cycle in seconds
+-l or --logfile [s; path] (./profile.log_<user>_<timestamp>) full or relative 
+           path to the logfile (about 400bytes per minute).
+-i or --interface [s] (none) ifconfig interface name; 
+        optional; if not given, will not be recorded
+-h or --help prints this message. 
+-g or --gnuplot will simultaneously stream-plot a subset of the printed 
+           data in if you have an active X11 session. Updates every 15s.
+            Test with 'xeyes'. If a pair of eyes pop up, you have a 
+            compatible X11 session.
+            Use x2go <https://goo.gl/TbcjFU> to provide it if not.
+
+NB: flag and option require a space between them. 
+    ie '-p 5' is good; '-p5' is bad.  
+            
+The gnuplot commands used to plot this profiling data have
+been written to the file 'profile.gnuplot_<user>_<timestamp>'
+using the standard logfile name 'profile.log_<user>_<timestamp>'.  
+You'll have to modify it to optimize the various scales, and
+modify it to plot what you want.  
+
+Dependencies & Assumptions
+- assumes 'gnuplot' version >= 4.6.2, compiled with the Qt
+widgets.  You can view the plot with the wx widget build,
+but you won't be able to zoom or extract values with the
+cursor.
+
+- requires 'iotop' to be installed and if regular users will
+use it, requires that it be installed such that those users 
+in the [iotop] group can execute it with 'sudo'.  Enter the 
+following line into the '/etc/sudoers' file: 
+%iotop ALL=(root) NOPASSWD: /usr/sbin/iotop
+
+- assumes 'perfquery' to query Infiniband counters, which is part 
+of the OFED utilities.  If you don't have IB or 'perfquery', it 
+will ignored.  You may get some gnuplot complaints, but it
+should still work.
+
+In the gnuplot, points showing bytes coming IN are in cool colors
+(blue/green) and are represented by downward arrowheads.  Points 
+showing bytes going OUT are in warm colors (red/pink/orange) and 
+are represented by upward arrowheads.
+
+ENDHELP
+exit 0
+}
+
+
+OPTS=`getopt -o u:p:l:i:c:hg --long user:,period:,log:,command:,interface:,gnuplot,help -n 'parse-options' -- "$@"`
+if [ $? != 0 ] ; then echo "Don't understand the options you gave." >&2 ; usage; exit 1 ; fi
+
+while true; do
+  case "$1" in
+    -u | --user )     user="$2";   shift 2 ;;
+    -c | --comment )  COMMENT="$2";shift 2 ;;
+    -h | --help )     HELP=true;   shift ;;
+    -g | --gnuplot )  PLOT="1";    shift ;;
+    -p | --period )   PERIOD="$2"; shift 2 ;;
+    -l | --log )      LOG="$2";    shift 2 ;;
+    -i | --interface) IFACE="$2";  shift 2 ;;
+    -- ) shift; break ;;
+    * ) break ;;
+  esac
+done
+
+# takes about 2-3 sec for cycle, so 2s is the min cylce time.
+# adjust the PERIOD to account for that
+
+if [ "$PERIOD" -lt "2" ]; then
+  echo "WARN: cycle time is ~2s; setting period to 2."
+  sPERIOD=2
+fi
+sPERIOD=$(expr $PERIOD - 2)
+
+# check user
+id=`id $user 2> /dev/null`
+if [[ "${id}" == "" ]]; then
+  echo "
+  No such user: [$user]. Typo?  Thinko?  I beseech thee to try again..
+"
+  exit 0
+fi
+
+# check for required utils
+for oo in iotop gnuplot ifstat top scut stats; do 
+  if [ "$(which $oo | wc -l)" != "1" ] ; then 
+    echo "
+WARN: I can't find [$oo] in your path.  Death or dismemberment to surely follow..
+Consider installing it.
+"
+    if [ "$oo" == "stats" ]; then echo "'stats' at: https://goo.gl/uGsS"; fi
+    if [ "$oo" == "scut" ];  then echo "'scut'  at: https://goo.gl/7za6"; fi
+  fi
+done
+
+
+if [ "$HELP" = "true" ]; then  usage; fi
+
+if [ "$PLOT" = "1" ]; then 
+echo "
+Since you asked for simultaneous plotting, the file 
+'profile._<user>_<timestamp>' has been written to this dir for 
+plotting the logfile. The plot will refresh at 15s intervals 
+regardless of the period requested.  If you have zoomed into 
+the plot, it will be reset when the plot refreshes.
+"
+
+# dump the plotfile
+cat << GNUPLOT > profile.gnuplot_${suffix}
+# this file came from profilemyjob.sh and contains gnuplot instructions for 
+# plotting the log file, normally called 'profile.log_<user>_<timestamp>'
+reset
+set autoscale
+set ylabel 'Profiling Vars (note log scale)'
+set xlabel 'Timecourse in [$PERIOD] sec slices' 
+set title "Profile for [$user] jobs\n$COMMENT}\n{/*0.8 Started $ds; for var defs, see: <https://goo.gl/hSz8bf> }"
+# reserve for adding other labels
+#set label "for var defs, see: <https://goo.gl/hSz8bf>" at screen 0.5, 0.9 font "Arial,8"
+set grid
+# un/comment if you want log scale on either axis
+set logscale y 
+#set logscale x
+set rmargin 5
+
+# size of the screen window  
+set terminal qt size 1000,500
+# can also use the wxt term, but it won't be interactive
+# set terminal wxt size 1000,500
+
+set key lmargin
+
+# to omit lines, delete them or move them out of the following stanza
+# gnuplot does not allow comments in continuation lines.
+
+plot '${LOG}' \
+        using 15 title 'User Read'      with points pointtype 10 lc rgb "light-green", \\
+     '' using 16 title 'User Write'     with points pointtype  8 lc rgb "light-red", \\
+     '' using 18 title 'Av IOWait'      with points pointtype 13 lc rgb "red", \\
+     '' using  9 title '/tmp used'      with points pointtype 12 lc rgb "grey20", \\
+     '' using  8 title 'swap used'      with points pointtype 13 lc rgb "pink", \\
+     '' using 17 title 'User swap'      with points pointtype 12 lc rgb "pink", \\
+     '' using 20 title 'TCP In'         with points pointtype 11 lc rgb "green", \\
+     '' using 21 title 'TCP Out'        with points pointtype  9 lc rgb "orange", \\
+     '' using 22 title 'RDMA In'        with points pointtype 11 lc rgb "steelblue", \\
+     '' using 23 title 'RDMA Out'       with points pointtype  9 lc rgb "salmon", \\
+     '' using  2 title 'User PIDs'      with points pointtype  1 lc rgb "turquoise", \\
+     '' using  7 title 'Free RAM'       with points pointtype  1 lc rgb "violet", \\
+     '' using  5 title 'User RSS'       with points pointtype  2 lc rgb "purple", \\
+     '' using  4 title 'User Avg %CPU'  with points pointtype  5 lc rgb "grey", \\
+     '' using 10 title '1m LoadAvg'     with points pointtype  3 lc rgb "blue", \\
+     '' using  3 title 'Ttl User cores' with points pointtype  7 lc rgb "black"
+
+# you can add connecting lines to each variable by inserting the following line
+# just after the line plotting the <var#>:
+
+#     '' using  <var#>  with lines notitle, \\
+
+# for non-streaming mode, change the '15' below to '-1' to pause indefinitely
+pause 15
+reread 
+
+GNUPLOT
+
+fi
+
+module load gnuplot  &> /dev/null # UCI's HPC requires this 
+
+rm -f profile.network.tmp
+echo "Logging to screen and to [$LOG]"
+
+if [[ "$IFACE" != "" ]]; then 
+    ifstat -i $IFACE -t 1 1 > profile.network.tmp
+    read -r netin netout <<< `tail -1 profile.network.tmp  | scut -f="1 2"` 
+    if [[ "$netin" = "n/a" ]]; then 
+    echo "
+    Error: There's no active [$IFACE] interface.  Choose another.
+    This is what ifstat reports:
+    "
+    ifstat 1 1
+    exit 0
+    fi
+fi
+
+HEADER="#        #user   CPU   Mean  Total  +-- Tmem,GB----+   swap      % /tmp  +---- loadavg ----+       System IO       Total User IO  User  Average                  net,KB/s [$IFACE]   
+# sec     PIDs  Cores  CPU   uRSSG     used     free   used        used    1m    exec    tot      in   KB  out       in      out  swap  IOwait%   N    TCP in  TCP out     RDMA in RDMA out  Local_Time"
+
+# print titles
+echo "#Log for user: [$user] starts at [$ds]
+# $COMMENT
+$HEADER" | tee $LOG
+
+start=`date +%s`
+# init the RBX for RDMA 
+PERFQUERY=0
+if [ "$(which perfquery |& grep "no perfquery")" = "" ] && [ "$IFACE" = "ib0" ] ; then PERFQUERY=1; fi;
+if [ "$PERFQUERY" = 1 ]; then
+  RBX=`perfquery -x  | grep XmitData | cut -f2 -d: | sed -e 's/\.*//g'`; 
+  RBR=`perfquery -x  | grep RcvData  | cut -f2 -d: | sed -e 's/\.*//g'`; 
+fi
+
+while [ 1 ]; do 
+
+((CYCLECNT++)) # increment the count.
+
+if [[ "$CYCLECNT" == "$PRINTHEADERS" ]]; then
+    >&2 echo "$HEADER"
+    #(>&2 echo "$HEADER")
+    CYCLECNT=0 # and reset
+fi
+
+# this gives total CPU %
+#usrcpu=`ps -ew -o uname,pcpu,pmem --sort=-pcpu,+pmem | grep $user | scut -f=1 | awk '{s+=$0}END{print s}'`
+usrcpu=`top -b -n 1 -u $user | grep $user | sed -e 's/^[[:space:]]*//' | tee profile.tmp | scut -f=8 | awk '{s+=$0}END{print s}'`
+fusrcpu=`echo "scale=2;$usrcpu/100" | /usr/bin/bc`; # echo bc2
+usrmeancpu=`ps -ew -o uname,pcpu,pmem --sort=-pcpu,+pmem | grep $user | scut -f=1 | grep -v '0.0' | stats --gfmt 2> /dev/null | grep Mean | scut -f=1`
+
+# this gives total USER RESIDENT Mem % (actual, not percentage ram)
+# We want values from top to get dynamic values, NOT ps
+usrrss=`cat profile.tmp | grep -v '0    0' | scut -f=5`  # omit the PIDs with 0 RAM
+# want to put this out in MB so it registers
+usrrssgb=0
+# this loop can go VERY long - 3s or more for hundreds of PIDs.  Needs to be made more efficient.
+# maybe by digging into /proc
+# test for # of PIDs and disable for >100.
+# time this loop and emit STDERR warning if it's more than PERIOD
+# echo "skiprl = [$skiprl] ; skip4 = [$skip4]"
+if [ "$skiprl" = "0" ] ; then  # if set to 1, then the period is too long and we're going to skip it.
+    skip4=$skipcyc  # keep resetting 
+    rlb=`date +%s`   # rssloopbegin
+#    echo "rlb = [$rlb]"
+    for ii in $usrrss; do 
+    #  echo == $ii ==
+    if [[ "$ii" =~ "m" ]] ; then 
+        bb=`echo $ii| tr -d 'm'`; rs=`echo "scale=2;$bb/1024" | /usr/bin/bc`      # div by 1K to get GB
+        elif [[ "$ii" =~ "g" ]]; then
+        rs=`echo $ii| tr -d 'g'`;                                                 # no math req to get GB
+        elif [[ "$ii" =~ "t" ]]; then
+        bb=`echo $ii| tr -d 't'`; rs=`echo "scale=2;$bb*1024" | /usr/bin/bc`      # mul by 1K to get GB
+    else # it's just the integer # indicating KB
+        rs=`echo "scale=2;$ii/1024/1024" | /usr/bin/bc`  # div by 1M to get to GB
+    fi;
+    usrrssgb=`echo "scale=2;  $usrrssgb+$rs" |  /usr/bin/bc` 
+    done 
+    rle=`date +%s`   # rssloopend
+#    echo "rle = [$rle]"
+    rlp=`echo "scale=0; $rle-$rlb" | /usr/bin/bc`  # rssloopperiod
+#    echo "rlp = [$rlp]"
+    if [ "$rlp" -gt "$PERIOD" ]; then 
+    >&2 echo "WARN: PERIOD requested by user [$PERIOD]s significantly exceeded 
+    by USRRSS loop; now skipped for [$skip4] cycles."
+    skiprl=1
+    fi
+else # its = 1 and now decr the skip4 
+  ((skip4--))
+  if [ "$skip4" = "0" ]; then skiprl=0; fi  # & test
+fi
+# this gives # of user processes
+usrPIDcnt=`ps -ew -o uname,pcpu,pmem | grep ^$user | wc -l`
+# this gives total system RAM (Used, Free)
+#read -r  tmemused tmemfree <<< `top -b  -n1 | grep "^Mem" | scut --od=" " -f="3 5" | tr -d 'k'`
+
+memtotal=`grep MemTotal /proc/meminfo | scut -f=1`;     # in KB
+
+# MemAvailable is a much better value, but its not in older meminfo structures, 
+# so going to use only MemTotal & MemFree
+# this leads to a severe under count in smaller systems, but not so much on large mem systems.
+
+tmemfree=`grep MemFree /proc/meminfo | scut -f=1`; # in KB
+tmemused=`echo "scale=2;${memtotal}-${tmemfree}" | /usr/bin/bc` # in KB
+
+tmemusedg=`echo "scale=2;$tmemused/$mb" | /usr/bin/bc` # echo bc3
+tmemfreeg=`echo "scale=2;$tmemfree/$mb" | /usr/bin/bc`; # echo bc4
+
+swapused=`cat /proc/swaps | grep -v Used | scut -f=3`
+# this give free disk on the root FS
+read -r tottmp freetmp <<< `df -h / | grep dev | scut --od=" " -f='1 2' | tr -d 'G'`
+if [[ "$tottmp" = *"T"* ]]; then 
+  tt=`echo $tottmp | tr -d 'T'`; 
+  tottmp=`echo "1000 * $tt"|/usr/bin/bc`; # echo bc5 
+fi
+pctmp=`echo "scale=2;($freetmp/$tottmp)*100" | /usr/bin/bc`; # echo bc6
+# total loadavg
+read -r load1m rprocs tprocs<<< `cat /proc/loadavg | cut -f1,4 -d " " | tr '/' ' '`
+
+## ## Disk IO (iotop needs to be sudo-enabled for mere users to use ## ##
+# ttlrd, ttlwr are total disk read / write
+# iotop doesn't need the period since it will be triggered by the loop cycle.
+#read -r ttlrd ttlwr <<<$(sudo iotop -qq -n 1 -P -o -k -b  -u $user | tr ':' ' '| tee $iotmp | grep Total | scut -f='3 9')
+read -r ttlrd ttlwr <<<$(sudo iotop -qq -o -n 1 -P -k -b  -u $user | tr ':' ' '| tee $iotmp | grep Tota[l] | scut -f='3 9')
+
+# userrd is user summed read; userwr is user summed write
+userrd=`grep -v DISK $iotmp | sed -e 's/^[[:space:]]*//' | scut -f=3 | awk '{s+=$0}END{print s}'`
+userwr=`grep -v DISK $iotmp | sed -e 's/^[[:space:]]*//' | scut -f=5 | awk '{s+=$0}END{print s}'`
+swap=`grep -v DISK $iotmp | sed -e 's/^[[:space:]]*//' | scut -f=7 | awk '{s+=$0}END{print s}'`
+iowait=`grep -v DISK $iotmp | sed -e 's/^[[:space:]]*//' | scut -f=9 | stats 2> /dev/null | grep Mean | scut -f=1`
+#mxiowait=`grep -v DISK $iotmp | sed -e 's/^[[:space:]]*//' | scut -f=9 | stats 2> /dev/null | grep Max | scut -f=1`
+smpleN=`grep -v DISK $iotmp | sed -e 's/^[[:space:]]*//' | scut -f=9 | stats 2> /dev/null | grep Number | scut -f=1`
+  
+now=`date +%s`
+esfs=$(expr $now - $start)
+datestmp=`date +"%a_%T"`
+
+if [[ "$IFACE" != "" ]]; then
+    read -r netin netout <<< `ifstat -i $IFACE -t 1 1 | tail -1 | scut -f="1 2"`
+    # test if ib0, and if so also dump RDMA stats
+    read -r ibn ibytes <<< `grep ib0 /proc/net/dev | scut -f='1 2'`
+    if [ "$ibn" != "" ] && [ "$ibytes" != "0" ]; then # theres a functioning ib0 interface
+      # now get the difference between before and after
+        RAX=`perfquery -x  | grep XmitData | cut -f2 -d: | sed -e 's/\.*//g'`; 
+        RAR=`perfquery -x  | grep RcvData  | cut -f2 -d: | sed -e 's/\.*//g'`; 
+        XMIT_RDMABW=`echo "scale=4; ($RAX-$RBX)/256/$PERIOD" | bc`; # KB/s (see man perfquery)
+        RECV_RDMABW=`echo "scale=4; ($RAR-$RBR)/256/$PERIOD" | bc`; # KB/s
+    fi
+fi
+
+
+# debug those damn vars
+# for o in esfs  usrPIDcnt fusrcpu usrmeancpu usrrssgb tmemusedg tmemfreeg swapused pctmp load1m  rprocs tprocs ttlrd ttlwr userrd userwr swap iowait smpleN ; do
+#   echo "$o =  = [${!o}]" # make vars out of vars
+# done
+
+# need to add the network stuff behind an if statement
+printf "%-7d %6d %5.1f %5.1f  %6.1f  %7.2f  %7.2f  %7d   %7.1f  %5.1f  %5d  %5d  %7.1f  %7.1f  %7.1f  %7.1f  %4.1f  %5.1f    %2d"\
+       "$esfs" "$usrPIDcnt" "$fusrcpu" "$usrmeancpu" "$usrrssgb" "$tmemusedg" "$tmemfreeg" "$swapused" "$pctmp" "$load1m"  "$rprocs" "$tprocs" "$ttlrd" "$ttlwr" "$userrd" "$userwr" "$swap" "$iowait" "$smpleN" | tee -a $LOG
+
+#echo "IFACE = [$IFACE]"
+if [[ "$IFACE" == "" ]]; then echo -n "                      " | tee -a $LOG;
+else 
+  printf "  %8.1f %8.1f  " "$netin" "$netout" | tee -a $LOG
+  if [[ "$IFACE" == "ib0" ]]; then 
+    printf "  %8.1f %8.1f  " "$RECV_RDMABW" "$XMIT_RDMABW" | tee -a $LOG
+  else 
+    echo -n "                      " | tee -a $LOG;
+  fi
+fi
+
+if [ "$PERFQUERY" = 1 ]; then
+  RBX=`perfquery -x  | grep XmitData | cut -f2 -d: | sed -e 's/\.*//g'`; 
+  RBR=`perfquery -x  | grep RcvData  | cut -f2 -d: | sed -e 's/\.*//g'`; 
+fi
+
+echo "$datestmp" | tee -a $LOG  # and tag it with the datestamp.
+sleep $sPERIOD
+
+#echo "DEBUG: cyc = [$cyc] and PLOT = [$PLOT]"
+if [ $cyc -eq 0 ] && [[ "$PLOT" ]]; then 
+  #echo "INFO: Starting gnuplot.."
+  gnuplot profile.gnuplot_${suffix} 2> /dev/null &
+  gpPID=$!
+fi
+cyc=3
+
+done # end of big while loop
+
+
+kill -9 $gpPID; # kill off the backgrounded gnuplot
+
+
+

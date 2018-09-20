@@ -1,0 +1,211 @@
+#!/bin/bash
+# harry mangalam; hjmangalam@gmail.com 
+# this is 'pmj', the wrapper script that sets up and drives 
+# 'profilemyjobs', the script that does the real work
+# cd ~/bin; scp profilemyjobs pmj moo:~; moo 'scp profilemyjobs pmj hmangala@hpcs:~/bin'
+# tacg -n6 -slLc -S -F2 < ~/tacg/hg19/chr1.fa > tacg.junk
+
+# the following setup vars are taken directly from the profilemyjobs/pmj script 
+# and are mostly passthrus to it in slightly mangled form
+PERIOD=5      # the refresh period; how often to sample
+CWD=`pwd`     # where we are when we started out
+IFACE=""      # the network interface to use/monitor
+user="$USER"  # who the user is if not specified
+iotmp="profile.iotmp"  # a temp file for collecting the output of iotop
+CMD="XXX"     # var that holds the command to profile
+BEFORE=10     # how many cycles of data collection should precede the command
+AFTER=10      # how many cycles of data collection should follow the commands end
+CYCLECNT=0    # Number of ongoing cycles of data collection 
+G=""          # GNUPLOT indicator
+LOG=""        # will eventually hold the logfile name
+
+function usage()
+{
+   cat << ENDHELP | less
+pmj ver: 1.1.2, Sept 6th, 2018, hjmangalam@gmail.com
+(for more info, see: https://goo.gl/hSz8bf
+
+Usage: pmj options 
+This is a control script that controls the execution of the 
+'profilemyjobs' script that does the real work.  This script should 
+be used to start and stop the 'profilemyjobs' script when used in
+a batch job or to make the script behave interactively as well.
+
+So use 'pmj', not 'profilemyjobs' for the best experience with schedulers
+(tested with SGE at UCI; should be similar with other schedulers).
+
+Options: where [i]=integer; [s]=string (default)
+NB: flag and option require a space between them
+ie '-p 5' is good; '-p5' is bad.  
+
+-c or --command [s] (none) the command you want to profile (REQUIRED)
+-u or --user [s] (\$USER) login name of the user to profile
+-p or --period [i; secs] (15) sample cycle in seconds
+-b or --before [i; secs] (10) seconds of background BEFORE cmd
+-a or --after [i; secs] (10) seconds of background AFTER cmd
+-l or --logfile [s; path] (./profile.log_<user>_timestamp) full or 
+           relative path to the logfile (about 400bytes per minute).
+-i or --interface [s] (none) 'ifconfig' interface name;  (optional)
+           if not given, will not be recorded.  You will usually want 
+           'ib0' on the HPC cluster ('eth0' on the compute-1[123]-x nodes)
+-h or --help prints this message. 
+-g or --gnuplot will simultaneously stream-plot a subset of the printed 
+           data in if you have an active X11 session. Updates every 15s.
+            Test with 'xeyes'. If a pair of eyes pop up, you have a 
+            compatible X11 session.
+            Use x2go <https://goo.gl/TbcjFU> to provide it if not.
+            
+            You'll need gnuplot >= ver 4.6.2 compiled with the Qt widgets 
+            to use the interactive qt plot window.  You can view the plot
+            with the wx widget build, but you won't be able to zoom or extract
+            values with the cursor.
+
+Example qsub script (for UCI's HPC cluster)
+=========
+#!/bin/bash
+# SGE Directives
+#$ -q free*,gpu*         # use these Qs
+#$ -cwd                  # run out of the current dir
+#$ -j y                  # merge the STDOUT and STDERR into one file
+#$ -N hjm_tacg           # SGE job name
+#$ -S /bin/bash          # use real bash
+#$ -M \${USER}@uci.edu    # mail me. (\${USER} will pick up YOUR user name. )
+#$ -m be                 # when the job (b)egins, (e)nds
+
+module load tacg         # loads the tacg module to set PATHs
+
+# Where the data is.
+DDIR=/data/apps/commondata/Homo_sapiens/UCSC/hg19/Sequence/Chromosomes
+
+# the actual full command is:
+#     tacg -n6 -slLc -S -F2 < \$DDIR/chr1.fa > tacg.junk
+# which is how you submit it to pmj **IN QUOTES** as below
+# Keep STDIN/OUT/ERR inside the quotes and if your own command
+# includes double quotes ("), you'll have to escape them (\")
+
+pmj -b 15 -a 15 -p 2 -i ib0 -c "tacg -n6 -slLc -S -F2 < \$DDIR/chr1.fa > tacg.junk"
+=========
+
+('pmj' will also prefix the command with '/usr/bin/time -v' to capture 
+some useful parameters from the run.  Save and share that output with 
+your labmates.)
+
+The gnuplot commands used to plot this profiling data have been written
+to the file 'profile.gnuplot_<user>_<timestamp>'.
+
+(At >30,000 time points, the gnuplot user experience gets a bit slow.)
+
+You may have to edit it to optimize the various scales, and modify it to
+plot what you want.
+
+Also read the 'profilemyjobs -h' output for more related info.
+
+Thanks for using 'pmj' & 'profilemyjobs'.  
+Tell me how to make it better: <hjmangalam@gmail.com>
+
+
+ENDHELP
+
+exit 0
+}
+
+# now set up to process the options a la std getopt.
+OPTS=`getopt -o b:a:u:p:l:i:c:hg --long user:,period:,log:,command:,interface:,gnuplot,help -n 'parse-options' -- "$@"`
+if [ $? != 0 ] ; then echo "Don't understand the options you gave." >&2 ; usage; exit 1 ; fi
+
+# the below will mostly be used as passthru vars to profilemyjobs
+while true; do
+  case "$1" in
+    -u | --user )     user="$2";   shift 2 ;;
+    -b | --before )   BEFORE="$2"; shift 2 ;;
+    -a | --after )    AFTER="$2";  shift 2 ;;
+    -c | --command )  CMD="$2";    shift 2 ;;
+    -h | --help )     HELP=true;   shift   ;;
+    -g | --gnuplot )  PLOT=1;      shift   ;;
+    -p | --period )   PERIOD="$2"; shift 2 ;;
+    -l | --log )      LOG="$2";    shift 2 ;;
+    -i | --interface) IFACE="$2";  shift 2 ;;
+    -- ) shift; break ;;
+    * ) break ;;
+  esac
+done
+
+if [ "$HELP" = "true" ]; then  usage; fi
+
+# check that we have a command...
+if [[ "$CMD" = "XXX" ]]; then
+    echo "No command included; gotta have a command to execute!
+    Try again, buddy!
+    "
+    exit
+fi
+
+# set the user
+if [[ $user = "" ]]; then useropt="-u $USER"
+else useropt="-u $user"; 
+fi
+
+# check if we want gnuplot (default should be NO for batch jobs)
+if [[ $PLOT ]]; then G="-g"; fi 
+
+# check the interface
+if [[ "$IFACE" != "" ]]; then 
+  IFACE="-i $IFACE";
+fi
+  
+
+# log specified?  If not, set one.
+if [[ "$LOG" == "" ]]; then 
+    ds=`date +"%T_%F" | sed 's/:/./g'`
+    suffix=${user}_${ds}
+    LOG="-l ./profile.log_${suffix}"
+else 
+    LOG="-l $LOG"
+fi
+
+echo "INFO: Starting the profiler, then waiting for [$BEFORE]s to get a baseline";
+# and launch into the background
+
+PMJCMD="profilemyjobs $useropt -p $PERIOD $G $IFACE $LOG"
+#echo "the profilemyjobs command is:
+#[$PMJCMD]"
+
+/bin/bash -c "$PMJCMD" &
+pmjPID=$! # capture its PID as it goes by
+sleep $BEFORE
+
+echo "INFO: starting the job [$CMD] for you"
+
+# need to use a subshell to maintain STDIN/STDOUT pipes.
+# otherwise STDIN/OUT conflicts with parent and command will just hang/suspend
+# and may as well include the '/usr/bin/time -v' prefix just bc..
+/bin/bash -c "/usr/bin/time -v $CMD"
+
+echo "INFO: The command [$CMD] has finished."
+
+echo "INFO:Recording a baseline post-command for [$AFTER]s ending conditions"
+sleep $AFTER
+
+echo "INFO: Stopping the profiler..."
+kill -15 $pmjPID
+
+# kill off the background gnuplot if it's still around
+echo "INFO: Killing off gnuplot if it's still running."
+kill $(ps aux | grep gnuplo[t]| scut -f=1)
+
+# clean up tmp files
+rm -f profile.network.tmp profile.iotmp
+
+echo "
+You can now review the plotfile via:
+    cd $CWD
+    module load gnuplot  # on HPC; will differ on other systems.
+    gnuplot profile.gnuplot_<user>_<timestamp> 2> /dev/null
+
+gnuplot will refresh every 15s, resetting the zoom to 1;
+edit the gnuplot script if this bothers you (change 'pause 15' to
+'pause -1' if this bothers you.
+    
+Thanks for using profilemyjobs.  
+Tell me how to make it better <hjmangalam@gmail.com>
+"

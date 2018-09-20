@@ -1,0 +1,1289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta name="generator" content="AsciiDoc 8.6.9">
+<title>profilemyjobs</title>
+<style type="text/css">
+/* Shared CSS for AsciiDoc xhtml11 and html5 backends */
+
+/* Default font. */
+body {
+  font-family: Georgia,serif;
+}
+
+/* Title font. */
+h1, h2, h3, h4, h5, h6,
+div.title, caption.title,
+thead, p.table.header,
+#toctitle,
+#author, #revnumber, #revdate, #revremark,
+#footer {
+  font-family: Arial,Helvetica,sans-serif;
+}
+
+body {
+  margin: 1em 5% 1em 5%;
+}
+
+a {
+  color: blue;
+  text-decoration: underline;
+}
+a:visited {
+  color: fuchsia;
+}
+
+em {
+  font-style: italic;
+  color: navy;
+}
+
+strong {
+  font-weight: bold;
+  color: #083194;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  color: #527bbd;
+  margin-top: 1.2em;
+  margin-bottom: 0.5em;
+  line-height: 1.3;
+}
+
+h1, h2, h3 {
+  border-bottom: 2px solid silver;
+}
+h2 {
+  padding-top: 0.5em;
+}
+h3 {
+  float: left;
+}
+h3 + * {
+  clear: left;
+}
+h5 {
+  font-size: 1.0em;
+}
+
+div.sectionbody {
+  margin-left: 0;
+}
+
+hr {
+  border: 1px solid silver;
+}
+
+p {
+  margin-top: 0.5em;
+  margin-bottom: 0.5em;
+}
+
+ul, ol, li > p {
+  margin-top: 0;
+}
+ul > li     { color: #aaa; }
+ul > li > * { color: black; }
+
+.monospaced, code, pre {
+  font-family: "Courier New", Courier, monospace;
+  font-size: inherit;
+  color: navy;
+  padding: 0;
+  margin: 0;
+}
+pre {
+  white-space: pre-wrap;
+}
+
+#author {
+  color: #527bbd;
+  font-weight: bold;
+  font-size: 1.1em;
+}
+#email {
+}
+#revnumber, #revdate, #revremark {
+}
+
+#footer {
+  font-size: small;
+  border-top: 2px solid silver;
+  padding-top: 0.5em;
+  margin-top: 4.0em;
+}
+#footer-text {
+  float: left;
+  padding-bottom: 0.5em;
+}
+#footer-badges {
+  float: right;
+  padding-bottom: 0.5em;
+}
+
+#preamble {
+  margin-top: 1.5em;
+  margin-bottom: 1.5em;
+}
+div.imageblock, div.exampleblock, div.verseblock,
+div.quoteblock, div.literalblock, div.listingblock, div.sidebarblock,
+div.admonitionblock {
+  margin-top: 1.0em;
+  margin-bottom: 1.5em;
+}
+div.admonitionblock {
+  margin-top: 2.0em;
+  margin-bottom: 2.0em;
+  margin-right: 10%;
+  color: #606060;
+}
+
+div.content { /* Block element content. */
+  padding: 0;
+}
+
+/* Block element titles. */
+div.title, caption.title {
+  color: #527bbd;
+  font-weight: bold;
+  text-align: left;
+  margin-top: 1.0em;
+  margin-bottom: 0.5em;
+}
+div.title + * {
+  margin-top: 0;
+}
+
+td div.title:first-child {
+  margin-top: 0.0em;
+}
+div.content div.title:first-child {
+  margin-top: 0.0em;
+}
+div.content + div.title {
+  margin-top: 0.0em;
+}
+
+div.sidebarblock > div.content {
+  background: #ffffee;
+  border: 1px solid #dddddd;
+  border-left: 4px solid #f0f0f0;
+  padding: 0.5em;
+}
+
+div.listingblock > div.content {
+  border: 1px solid #dddddd;
+  border-left: 5px solid #f0f0f0;
+  background: #f8f8f8;
+  padding: 0.5em;
+}
+
+div.quoteblock, div.verseblock {
+  padding-left: 1.0em;
+  margin-left: 1.0em;
+  margin-right: 10%;
+  border-left: 5px solid #f0f0f0;
+  color: #888;
+}
+
+div.quoteblock > div.attribution {
+  padding-top: 0.5em;
+  text-align: right;
+}
+
+div.verseblock > pre.content {
+  font-family: inherit;
+  font-size: inherit;
+}
+div.verseblock > div.attribution {
+  padding-top: 0.75em;
+  text-align: left;
+}
+/* DEPRECATED: Pre version 8.2.7 verse style literal block. */
+div.verseblock + div.attribution {
+  text-align: left;
+}
+
+div.admonitionblock .icon {
+  vertical-align: top;
+  font-size: 1.1em;
+  font-weight: bold;
+  text-decoration: underline;
+  color: #527bbd;
+  padding-right: 0.5em;
+}
+div.admonitionblock td.content {
+  padding-left: 0.5em;
+  border-left: 3px solid #dddddd;
+}
+
+div.exampleblock > div.content {
+  border-left: 3px solid #dddddd;
+  padding-left: 0.5em;
+}
+
+div.imageblock div.content { padding-left: 0; }
+span.image img { border-style: none; vertical-align: text-bottom; }
+a.image:visited { color: white; }
+
+dl {
+  margin-top: 0.8em;
+  margin-bottom: 0.8em;
+}
+dt {
+  margin-top: 0.5em;
+  margin-bottom: 0;
+  font-style: normal;
+  color: navy;
+}
+dd > *:first-child {
+  margin-top: 0.1em;
+}
+
+ul, ol {
+    list-style-position: outside;
+}
+ol.arabic {
+  list-style-type: decimal;
+}
+ol.loweralpha {
+  list-style-type: lower-alpha;
+}
+ol.upperalpha {
+  list-style-type: upper-alpha;
+}
+ol.lowerroman {
+  list-style-type: lower-roman;
+}
+ol.upperroman {
+  list-style-type: upper-roman;
+}
+
+div.compact ul, div.compact ol,
+div.compact p, div.compact p,
+div.compact div, div.compact div {
+  margin-top: 0.1em;
+  margin-bottom: 0.1em;
+}
+
+tfoot {
+  font-weight: bold;
+}
+td > div.verse {
+  white-space: pre;
+}
+
+div.hdlist {
+  margin-top: 0.8em;
+  margin-bottom: 0.8em;
+}
+div.hdlist tr {
+  padding-bottom: 15px;
+}
+dt.hdlist1.strong, td.hdlist1.strong {
+  font-weight: bold;
+}
+td.hdlist1 {
+  vertical-align: top;
+  font-style: normal;
+  padding-right: 0.8em;
+  color: navy;
+}
+td.hdlist2 {
+  vertical-align: top;
+}
+div.hdlist.compact tr {
+  margin: 0;
+  padding-bottom: 0;
+}
+
+.comment {
+  background: yellow;
+}
+
+.footnote, .footnoteref {
+  font-size: 0.8em;
+}
+
+span.footnote, span.footnoteref {
+  vertical-align: super;
+}
+
+#footnotes {
+  margin: 20px 0 20px 0;
+  padding: 7px 0 0 0;
+}
+
+#footnotes div.footnote {
+  margin: 0 0 5px 0;
+}
+
+#footnotes hr {
+  border: none;
+  border-top: 1px solid silver;
+  height: 1px;
+  text-align: left;
+  margin-left: 0;
+  width: 20%;
+  min-width: 100px;
+}
+
+div.colist td {
+  padding-right: 0.5em;
+  padding-bottom: 0.3em;
+  vertical-align: top;
+}
+div.colist td img {
+  margin-top: 0.3em;
+}
+
+@media print {
+  #footer-badges { display: none; }
+}
+
+#toc {
+  margin-bottom: 2.5em;
+}
+
+#toctitle {
+  color: #527bbd;
+  font-size: 1.1em;
+  font-weight: bold;
+  margin-top: 1.0em;
+  margin-bottom: 0.1em;
+}
+
+div.toclevel0, div.toclevel1, div.toclevel2, div.toclevel3, div.toclevel4 {
+  margin-top: 0;
+  margin-bottom: 0;
+}
+div.toclevel2 {
+  margin-left: 2em;
+  font-size: 0.9em;
+}
+div.toclevel3 {
+  margin-left: 4em;
+  font-size: 0.9em;
+}
+div.toclevel4 {
+  margin-left: 6em;
+  font-size: 0.9em;
+}
+
+span.aqua { color: aqua; }
+span.black { color: black; }
+span.blue { color: blue; }
+span.fuchsia { color: fuchsia; }
+span.gray { color: gray; }
+span.green { color: green; }
+span.lime { color: lime; }
+span.maroon { color: maroon; }
+span.navy { color: navy; }
+span.olive { color: olive; }
+span.purple { color: purple; }
+span.red { color: red; }
+span.silver { color: silver; }
+span.teal { color: teal; }
+span.white { color: white; }
+span.yellow { color: yellow; }
+
+span.aqua-background { background: aqua; }
+span.black-background { background: black; }
+span.blue-background { background: blue; }
+span.fuchsia-background { background: fuchsia; }
+span.gray-background { background: gray; }
+span.green-background { background: green; }
+span.lime-background { background: lime; }
+span.maroon-background { background: maroon; }
+span.navy-background { background: navy; }
+span.olive-background { background: olive; }
+span.purple-background { background: purple; }
+span.red-background { background: red; }
+span.silver-background { background: silver; }
+span.teal-background { background: teal; }
+span.white-background { background: white; }
+span.yellow-background { background: yellow; }
+
+span.big { font-size: 2em; }
+span.small { font-size: 0.6em; }
+
+span.underline { text-decoration: underline; }
+span.overline { text-decoration: overline; }
+span.line-through { text-decoration: line-through; }
+
+div.unbreakable { page-break-inside: avoid; }
+
+
+/*
+ * xhtml11 specific
+ *
+ * */
+
+div.tableblock {
+  margin-top: 1.0em;
+  margin-bottom: 1.5em;
+}
+div.tableblock > table {
+  border: 3px solid #527bbd;
+}
+thead, p.table.header {
+  font-weight: bold;
+  color: #527bbd;
+}
+p.table {
+  margin-top: 0;
+}
+/* Because the table frame attribute is overriden by CSS in most browsers. */
+div.tableblock > table[frame="void"] {
+  border-style: none;
+}
+div.tableblock > table[frame="hsides"] {
+  border-left-style: none;
+  border-right-style: none;
+}
+div.tableblock > table[frame="vsides"] {
+  border-top-style: none;
+  border-bottom-style: none;
+}
+
+
+/*
+ * html5 specific
+ *
+ * */
+
+table.tableblock {
+  margin-top: 1.0em;
+  margin-bottom: 1.5em;
+}
+thead, p.tableblock.header {
+  font-weight: bold;
+  color: #527bbd;
+}
+p.tableblock {
+  margin-top: 0;
+}
+table.tableblock {
+  border-width: 3px;
+  border-spacing: 0px;
+  border-style: solid;
+  border-color: #527bbd;
+  border-collapse: collapse;
+}
+th.tableblock, td.tableblock {
+  border-width: 1px;
+  padding: 4px;
+  border-style: solid;
+  border-color: #527bbd;
+}
+
+table.tableblock.frame-topbot {
+  border-left-style: hidden;
+  border-right-style: hidden;
+}
+table.tableblock.frame-sides {
+  border-top-style: hidden;
+  border-bottom-style: hidden;
+}
+table.tableblock.frame-none {
+  border-style: hidden;
+}
+
+th.tableblock.halign-left, td.tableblock.halign-left {
+  text-align: left;
+}
+th.tableblock.halign-center, td.tableblock.halign-center {
+  text-align: center;
+}
+th.tableblock.halign-right, td.tableblock.halign-right {
+  text-align: right;
+}
+
+th.tableblock.valign-top, td.tableblock.valign-top {
+  vertical-align: top;
+}
+th.tableblock.valign-middle, td.tableblock.valign-middle {
+  vertical-align: middle;
+}
+th.tableblock.valign-bottom, td.tableblock.valign-bottom {
+  vertical-align: bottom;
+}
+
+
+/*
+ * manpage specific
+ *
+ * */
+
+body.manpage h1 {
+  padding-top: 0.5em;
+  padding-bottom: 0.5em;
+  border-top: 2px solid silver;
+  border-bottom: 2px solid silver;
+}
+body.manpage h2 {
+  border-style: none;
+}
+body.manpage div.sectionbody {
+  margin-left: 3em;
+}
+
+@media print {
+  body.manpage div#toc { display: none; }
+}
+
+
+@media screen {
+  body {
+    max-width: 50em; /* approximately 80 characters wide */
+    margin-left: 16em;
+  }
+
+  #toc {
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    width: 13em;
+    padding: 0.5em;
+    padding-bottom: 1.5em;
+    margin: 0;
+    overflow: auto;
+    border-right: 3px solid #f8f8f8;
+    background-color: white;
+  }
+
+  #toc .toclevel1 {
+    margin-top: 0.5em;
+  }
+
+  #toc .toclevel2 {
+    margin-top: 0.25em;
+    display: list-item;
+    color: #aaaaaa;
+  }
+
+  #toctitle {
+    margin-top: 0.5em;
+  }
+}
+</style>
+<script type="text/javascript">
+/*<![CDATA[*/
+var asciidoc = {  // Namespace.
+
+/////////////////////////////////////////////////////////////////////
+// Table Of Contents generator
+/////////////////////////////////////////////////////////////////////
+
+/* Author: Mihai Bazon, September 2002
+ * http://students.infoiasi.ro/~mishoo
+ *
+ * Table Of Content generator
+ * Version: 0.4
+ *
+ * Feel free to use this script under the terms of the GNU General Public
+ * License, as long as you do not remove or alter this notice.
+ */
+
+ /* modified by Troy D. Hanson, September 2006. License: GPL */
+ /* modified by Stuart Rackham, 2006, 2009. License: GPL */
+
+// toclevels = 1..4.
+toc: function (toclevels) {
+
+  function getText(el) {
+    var text = "";
+    for (var i = el.firstChild; i != null; i = i.nextSibling) {
+      if (i.nodeType == 3 /* Node.TEXT_NODE */) // IE doesn't speak constants.
+        text += i.data;
+      else if (i.firstChild != null)
+        text += getText(i);
+    }
+    return text;
+  }
+
+  function TocEntry(el, text, toclevel) {
+    this.element = el;
+    this.text = text;
+    this.toclevel = toclevel;
+  }
+
+  function tocEntries(el, toclevels) {
+    var result = new Array;
+    var re = new RegExp('[hH]([1-'+(toclevels+1)+'])');
+    // Function that scans the DOM tree for header elements (the DOM2
+    // nodeIterator API would be a better technique but not supported by all
+    // browsers).
+    var iterate = function (el) {
+      for (var i = el.firstChild; i != null; i = i.nextSibling) {
+        if (i.nodeType == 1 /* Node.ELEMENT_NODE */) {
+          var mo = re.exec(i.tagName);
+          if (mo && (i.getAttribute("class") || i.getAttribute("className")) != "float") {
+            result[result.length] = new TocEntry(i, getText(i), mo[1]-1);
+          }
+          iterate(i);
+        }
+      }
+    }
+    iterate(el);
+    return result;
+  }
+
+  var toc = document.getElementById("toc");
+  if (!toc) {
+    return;
+  }
+
+  // Delete existing TOC entries in case we're reloading the TOC.
+  var tocEntriesToRemove = [];
+  var i;
+  for (i = 0; i < toc.childNodes.length; i++) {
+    var entry = toc.childNodes[i];
+    if (entry.nodeName.toLowerCase() == 'div'
+     && entry.getAttribute("class")
+     && entry.getAttribute("class").match(/^toclevel/))
+      tocEntriesToRemove.push(entry);
+  }
+  for (i = 0; i < tocEntriesToRemove.length; i++) {
+    toc.removeChild(tocEntriesToRemove[i]);
+  }
+
+  // Rebuild TOC entries.
+  var entries = tocEntries(document.getElementById("content"), toclevels);
+  for (var i = 0; i < entries.length; ++i) {
+    var entry = entries[i];
+    if (entry.element.id == "")
+      entry.element.id = "_toc_" + i;
+    var a = document.createElement("a");
+    a.href = "#" + entry.element.id;
+    a.appendChild(document.createTextNode(entry.text));
+    var div = document.createElement("div");
+    div.appendChild(a);
+    div.className = "toclevel" + entry.toclevel;
+    toc.appendChild(div);
+  }
+  if (entries.length == 0)
+    toc.parentNode.removeChild(toc);
+},
+
+
+/////////////////////////////////////////////////////////////////////
+// Footnotes generator
+/////////////////////////////////////////////////////////////////////
+
+/* Based on footnote generation code from:
+ * http://www.brandspankingnew.net/archive/2005/07/format_footnote.html
+ */
+
+footnotes: function () {
+  // Delete existing footnote entries in case we're reloading the footnodes.
+  var i;
+  var noteholder = document.getElementById("footnotes");
+  if (!noteholder) {
+    return;
+  }
+  var entriesToRemove = [];
+  for (i = 0; i < noteholder.childNodes.length; i++) {
+    var entry = noteholder.childNodes[i];
+    if (entry.nodeName.toLowerCase() == 'div' && entry.getAttribute("class") == "footnote")
+      entriesToRemove.push(entry);
+  }
+  for (i = 0; i < entriesToRemove.length; i++) {
+    noteholder.removeChild(entriesToRemove[i]);
+  }
+
+  // Rebuild footnote entries.
+  var cont = document.getElementById("content");
+  var spans = cont.getElementsByTagName("span");
+  var refs = {};
+  var n = 0;
+  for (i=0; i<spans.length; i++) {
+    if (spans[i].className == "footnote") {
+      n++;
+      var note = spans[i].getAttribute("data-note");
+      if (!note) {
+        // Use [\s\S] in place of . so multi-line matches work.
+        // Because JavaScript has no s (dotall) regex flag.
+        note = spans[i].innerHTML.match(/\s*\[([\s\S]*)]\s*/)[1];
+        spans[i].innerHTML =
+          "[<a id='_footnoteref_" + n + "' href='#_footnote_" + n +
+          "' title='View footnote' class='footnote'>" + n + "</a>]";
+        spans[i].setAttribute("data-note", note);
+      }
+      noteholder.innerHTML +=
+        "<div class='footnote' id='_footnote_" + n + "'>" +
+        "<a href='#_footnoteref_" + n + "' title='Return to text'>" +
+        n + "</a>. " + note + "</div>";
+      var id =spans[i].getAttribute("id");
+      if (id != null) refs["#"+id] = n;
+    }
+  }
+  if (n == 0)
+    noteholder.parentNode.removeChild(noteholder);
+  else {
+    // Process footnoterefs.
+    for (i=0; i<spans.length; i++) {
+      if (spans[i].className == "footnoteref") {
+        var href = spans[i].getElementsByTagName("a")[0].getAttribute("href");
+        href = href.match(/#.*/)[0];  // Because IE return full URL.
+        n = refs[href];
+        spans[i].innerHTML =
+          "[<a href='#_footnote_" + n +
+          "' title='View footnote' class='footnote'>" + n + "</a>]";
+      }
+    }
+  }
+},
+
+install: function(toclevels) {
+  var timerId;
+
+  function reinstall() {
+    asciidoc.footnotes();
+    if (toclevels) {
+      asciidoc.toc(toclevels);
+    }
+  }
+
+  function reinstallAndRemoveTimer() {
+    clearInterval(timerId);
+    reinstall();
+  }
+
+  timerId = setInterval(reinstall, 500);
+  if (document.addEventListener)
+    document.addEventListener("DOMContentLoaded", reinstallAndRemoveTimer, false);
+  else
+    window.onload = reinstallAndRemoveTimer;
+}
+
+}
+asciidoc.install(3);
+/*]]>*/
+</script>
+</head>
+<body class="article">
+<div id="header">
+<h1>profilemyjobs</h1>
+<span id="author">Harry Mangalam</span><br>
+<span id="email" class="monospaced">&lt;<a href="mailto:hjmangalam@gmail.com">hjmangalam@gmail.com</a>&gt;</span><br>
+<span id="revnumber">version 1.1.2,</span>
+<span id="revdate">Sept 6th, 2018</span>
+<div id="toc">
+  <div id="toctitle">Table of Contents</div>
+  <noscript><p><b>JavaScript must be enabled in your browser to display the table of contents.</b></p></noscript>
+</div>
+</div>
+<div id="content">
+<div id="preamble">
+<div class="sectionbody">
+<div class="paragraph"><p><span class="image">
+<img src="http://moo.nac.uci.edu/~hjm/hpc/profilemyjobs/profilemyjobs.png" alt="profilemyjobs example plot">
+</span></p></div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_introduction">1. Introduction</h2>
+<div class="sectionbody">
+<div class="paragraph"><p>In many computational environments, especially in clusters where jobs often run in batch mode disconnected from a user terminal, it&#8217;s difficult to determine why a job is running slowly or not at all.  <em>profilemyjobs</em> &amp;  its batch wrapper <em>pmj</em> assist in profiling long-running jobs by capturing many system variables to a log and presenting them nearly real-time via <em>gnuplot</em> (if running in a connected terminal), or after the fact by running the autogenerated <em>gnuplot</em> script (see above).</p></div>
+<div class="paragraph"><p><em>profilemyjobs</em> is the script that does much of the work. It is important to note that it is not a fine-grained execution profiler like <a href="http://oprofile.sourceforge.net/news/">oprofile</a> or <a href="http://www.brendangregg.com/perf.html">perf</a>, but a very coarse-grained utility that takes about 2s to cycle thru its crude data collection (tho it does not take much in the way of CPU or RAM).</p></div>
+<div class="paragraph"><p><em>pmj</em> is a wrapper script that takes a number of arguments, most of them pass-thru options for <em>profilemyjobs</em> and controls how it&#8217;s executed in a batch environment.</p></div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_features">2. Features</h2>
+<div class="sectionbody">
+<div class="paragraph"><p><em>profilemyjobs</em> currently collects about 24 variables (<a href="#vardescript">see below</a>), some slightly overlapping; it plots about 13 of them simultaneously to show what the major determinants are doing thru the course of the run so that bottlenecks can be easily and visually identified.  The zoom/pan ability of gnuplot, the mouse-over variable reporting, and the log scale on the Y axis allow all the variables to be plotted on a single pane to be better coordinated.</p></div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_package_download">3. Package Download</h2>
+<div class="sectionbody">
+<div class="paragraph"><p>Until it shows up in GitHub, you can download the scripts <em>pmj</em>, <em>profilemyjobs</em>, <em>scut</em>, and <em>stats</em> <a href="http://moo.nac.uci.edu/~hjm/hpc/profilemyjobs/profilemyjobs.tar.gz">in a single tarball here</a>. Untar them and place them in a dir on your <em>PATH</em> and use.
+<a href="mailto:hjmangalam@gmail.com?subject=profilemyjobs%20feedback">Let me know how they work.</a></p></div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_installation">4. Installation</h2>
+<div class="sectionbody">
+<div class="paragraph"><p>Both <em>pmj</em> and <em>profilemyjobs</em> are bash scripts that call standard system utilities.  The exceptions are 2 self-writ Perl utilities <a href="http://moo.nac.uci.edu/<sub>hjm/scut">scut</a> and <a href="http://moo.nac.uci.edu/</sub>hjm/stats">stats</a> which are included in the packaging and an Infiniband utility <a href="https://linux.die.net/man/8/perfquery">perfquery</a> which is usually included in the <em>OpenIB</em>/<a href="https://www.openfabrics.org/">OFED</a> packages.</p></div>
+<div class="paragraph"><p>The one UCI-specific command is the <em>module load gnuplot</em> command in <em>profilemyjobs</em> at about line 207.  If you don&#8217;t use modules, the error will be ignored.  If you do use modules but call it something else, it may fail.</p></div>
+<div class="sect2">
+<h3 id="_dependencies">4.1. Dependencies</h3>
+<div class="paragraph"><p>The dependencies below are tested to see if they exist.  If not, it will complain.</p></div>
+<div class="sect3">
+<h4 id="_gnuplot">4.1.1. gnuplot</h4>
+<div class="paragraph"><p><a href="http://www.gnuplot.info/">gnuplot</a> is the standard commandline Linux plotting package for good reason.  You&#8217;ll need version &gt;4.6, and especially a version compiled with the <a href="https://www.qt.io/">Qt</a> widget set that allows live pan/zoom.  A compatible version is available on most recent Linux distros.</p></div>
+</div>
+<div class="sect3">
+<h4 id="_scut">4.1.2. scut</h4>
+<div class="paragraph"><p><a href="http://moo.nac.uci.edu/~hjm/scut_cols_HOWTO.html">scut</a> is a Perl script that does a lot of scut work for you.  It acts as more flexible (but slower) version of <em>cut</em> and <em>join</em>.</p></div>
+</div>
+<div class="sect3">
+<h4 id="_stats">4.1.3. stats</h4>
+<div class="paragraph"><p>As its name suggests, <a href="http://moo.nac.uci.edu/~hjm/stats">stats</a> is a Perl script spits out descriptive stats of anything that is fed to it on STDIN.  Also does transforms on input data.</p></div>
+</div>
+<div class="sect3">
+<h4 id="_ifstat">4.1.4. ifstat</h4>
+<div class="paragraph"><p><a href="https://linux.die.net/man/1/ifstat">ifstat</a> is a standard Linux utility that produces a stream of bytes indicating how much TCP data IO is coming thru active Linux network interfaces. Note, TCP data only, not RDMA bytes.  For that you need&#8230;</p></div>
+</div>
+<div class="sect3">
+<h4 id="_perfview_ib_only">4.1.5. perfview (IB only)</h4>
+<div class="paragraph"><p><a href="https://linux.die.net/man/8/perfquery">perfview</a> is a Infiniband byte counter, usually distributed with the <a href="https://www.openfabrics.org/ofed-for-linux/">OFED package</a>.  This utility is invoked only if you ask for IB monitoring and an IB interface is detected.</p></div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_operations">5. Operations</h2>
+<div class="sectionbody">
+<div class="paragraph"><p>Both <em>profilemyjobs</em> and <em>pmj</em> will drop into their respective help pages if you append <em>-h</em> to the command. Otherwise, they will use the defaults and start logging.</p></div>
+<div class="sect2">
+<h3 id="_profilemyjobs">5.1. profilemyjobs</h3>
+<div class="paragraph"><p><em>profilemyjobs -h</em> will produce:</p></div>
+<div class="listingblock">
+<div class="content monospaced">
+<pre>profilemyjobs ver: 1.1.0, Aug 19, 2018, hjmangalam@gmail.com
+(for more info, see: https://goo.gl/hSz8bf)
+
+Usage: profilemyjobs options
+NB: This script runs until it is explicitly killed
+(usually by the associated 'pmj' wrapper)
+
+Options: where [i]=integer; [s]=string
+
+-u or --user [s] ($USER) login name of the user to profile
+-c or --comment [s] comment to add to the logfile header and to the plot
+-p or --period [i; secs] (15) sample cycle in seconds
+-l or --logfile [s; path] (./profile.log_&lt;user&gt;_&lt;timestamp&gt;) full or relative
+           path to the logfile (about 400bytes per minute).
+-i or --interface [s] (none) ifconfig interface name;
+        optional; if not given, will not be recorded
+-h or --help prints this message.
+-g or --gnuplot will simultaneously stream-plot a subset of the printed
+           data in if you have an active X11 session. Updates every 15s.
+            Test with 'xeyes'. If a pair of eyes pop up, you have a
+            compatible X11 session.
+            Use x2go &lt;https://goo.gl/TbcjFU&gt; to provide it if not.
+
+NB: flag and option require a space between them.
+    ie '-p 5' is good; '-p5' is bad.
+
+The gnuplot commands used to plot this profiling data have
+been written to the file 'profile.gnuplot_&lt;user&gt;_&lt;timestamp&gt;'
+using the standard logfile name 'profile.log_&lt;user&gt;_&lt;timestamp&gt;'.
+You'll have to modify it to optimize the various scales, and
+modify it to plot what you want.
+
+Dependencies &amp; Assumptions
+- assumes 'gnuplot' version &gt;= 4.6.2, compiled with the Qt
+widgets.  You can view the plot with the wx widget build,
+but you won't be able to zoom or extract values with the
+cursor.
+
+- requires 'iotop' to be installed and if regular users will
+use it, requires that it be installed such that those users
+in the [iotop] group can execute it with 'sudo'.  Enter the
+following line into the '/etc/sudoers' file:
+%iotop ALL=(root) NOPASSWD: /usr/sbin/iotop
+
+- assumes 'perfquery' to query Infiniband counters, which is part
+of the OFED utilities.  If you don't have IB or 'perfquery', it
+will ignored.  You may get some gnuplot complaints, but it
+should still work.
+
+In the 'gnuplot', points showing bytes coming IN are in cool colors
+(blue/green) and are represented by downward arrowheads.  Points
+showing bytes going OUT are in warm colors (red/pink/orange) and
+are represented by upward arrowheads. (NB: in different versions
+of 'gnuplot', colors are defined differently so while the symbols seem
+to be stable, colors can apparently change. The colors here are defined
+for 'gnuplot' v 5.0.3).</pre>
+</div></div>
+<div class="paragraph"><p><a href="mailto:hjmangalam@gmail.com?subject=profilemyjobs%20feedback">Feedback</a></p></div>
+</div>
+<div class="sect2">
+<h3 id="_pmj">5.2. pmj</h3>
+<div class="paragraph"><p><em>pmj -h</em> will produce ..</p></div>
+<div class="listingblock">
+<div class="content monospaced">
+<pre>pmj ver: 1.1.0, Aug 19, 2018, hjmangalam@gmail.com
+(for more info, see: https://goo.gl/hSz8bf
+
+Usage: pmj options
+This is a control script that controls the execution of the
+'profilemyjobs' script that does the real work.  This script should
+be used to start and stop the 'profilemyjobs' script when used in
+a batch job or to make the script behave interactively as well.
+
+So use 'pmj', not 'profilemyjobs' for the best experience with schedulers
+(tested with SGE at UCI; should be similar with other schedulers).
+
+Options: where [i]=integer; [s]=string (default)
+NB: flag and option require a space between them
+ie '-p 5' is good; '-p5' is bad.
+
+-c or --command [s] (none) the command you want to profile (REQUIRED)
+-u or --user [s] ($USER) login name of the user to profile
+-p or --period [i; secs] (15) sample cycle in seconds
+-b or --before [i; secs] (10) seconds of background BEFORE cmd
+-a or --after [i; secs] (10) seconds of background AFTER cmd
+-l or --logfile [s; path] (./profile.log_&lt;user&gt;_timestamp) full or
+           relative path to the logfile (about 400bytes per minute).
+-i or --interface [s] (none) 'ifconfig' interface name;  (optional)
+           if not given, will not be recorded.  You will usually want
+           'ib0' on the HPC cluster ('eth0' on the compute-1[123]-x nodes)
+-h or --help prints this message.
+-g or --gnuplot will simultaneously stream-plot a subset of the printed
+           data in if you have an active X11 session. Updates every 15s.
+            Test with 'xeyes'. If a pair of eyes pop up, you have a
+            compatible X11 session.
+            Use x2go &lt;https://goo.gl/TbcjFU&gt; to provide it if not.
+
+            You'll need gnuplot &gt;= ver 4.6.2 compiled with the Qt widgets
+            to use the interactive qt plot window.  You can view the plot
+            with the wx widget build, but you won't be able to zoom or extract
+            values with the cursor.
+
+Example qsub script (for UCI's HPC cluster)
+=========
+#!/bin/bash
+# SGE Directives
+#$ -q free*,gpu*         # use these Qs
+#$ -cwd                  # run out of the current dir
+#$ -j y                  # merge the STDOUT and STDERR into one file
+#$ -N hjm_tacg           # SGE job name
+#$ -S /bin/bash          # use real bash
+#$ -M ${USER}@uci.edu    # mail me. (${USER} will pick up YOUR user name. )
+#$ -m be                 # when the job (b)egins, (e)nds
+
+module load tacg         # loads the tacg module to set PATHs
+
+# Where the data is.
+DDIR=/data/apps/commondata/Homo_sapiens/UCSC/hg19/Sequence/Chromosomes
+
+# the actual full command is:
+#     tacg -n6 -slLc -S -F2 &lt; $DDIR/chr1.fa &gt; tacg.junk
+# which is how you submit it to pmj **IN QUOTES** as below
+# Keep STDIN/OUT/ERR inside the quotes and if your own command
+# includes double quotes ("), you'll have to escape them (\")
+
+pmj -b 15 -a 15 -p 2 -i ib0 -c "tacg -n6 -slLc -S -F2 &lt; $DDIR/chr1.fa &gt; tacg.junk"
+=========
+
+('pmj' will also prefix the command with '/usr/bin/time -v' to capture
+some useful parameters from the run.  Save and share that output with
+your labmates.)
+
+The gnuplot commands used to plot this profiling data have been written
+to the file 'profile.gnuplot_&lt;user&gt;_&lt;timestamp&gt;'.
+
+(At &gt;30,000 time points, the gnuplot user experience gets a bit slow.)
+
+You may have to edit it to optimize the various scales, and modify it to
+plot what you want.
+
+Also read the 'profilemyjobs -h' output for more related info.
+
+Thanks for using 'pmj' &amp; 'profilemyjobs'.
+Tell me how to make it better: &lt;hjmangalam@gmail.com&gt;</pre>
+</div></div>
+<div class="paragraph"><p><a href="mailto:hjmangalam@gmail.com?subject=profilemyjobs%20feedback">Feedback</a></p></div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="vardescript">6. Extended Variable Descriptions</h2>
+<div class="sectionbody">
+<div class="paragraph"><p>These are the variables recorded by <em>profilemyjobs</em>.  Only the ones with a superscripted <sup>*</sup> are displayed in the plot by default.  Due to space constraints, some plot labels are contracted and the contractions that are different are included (in parens).</p></div>
+<div class="paragraph"><p>The code that was used to generate the variable is shown, in most cases taken directly from the script.</p></div>
+<div class="admonitionblock">
+<table><tr>
+<td class="icon">
+<img src="./images/icons/note.png" alt="Note">
+</td>
+<td class="content">
+<div class="title">Apparent Conflicts</div>
+<div class="paragraph"><p>Many Linux utilities that seem to measure the same thing can conflict, due to timing/averaging issues, or to probing different parts of the kernel.  A good overview from the fabulous
+<a href="http://www.brendangregg.com/linuxperf.html">Brendan Gregg perf page</a> is shown here:</p></div>
+<div class="paragraph"><p><span class="image">
+<img src="brendangregg-perf.png" alt="Where Linux Tools get their data">
+</span></p></div>
+<div class="paragraph"><p>And as an example,
+<a href="https://unix.stackexchange.com/questions/118722/iotop-shows-swapin-but-vmstat-si-is-zero">here&#8217;s a discussion</a> of some of the issues surrounding the <em>iotop</em> measurement of SWAPIN.</p></div>
+<div class="paragraph"><p>I hit on the above discussion when I noticed that in one recording, amount of <a href="#swapused">swap used</a> was increasing  but <a href="#userswap">USER swap</a> (the user was root) was staying at zero.
+Related, the amount of swap reported by <em>free</em> vs <em>top</em> can be dramatically different.
+Ergo, multiple tools can give different views into the actual workings of the system.</p></div>
+</td>
+</tr></table>
+</div>
+<div class="paragraph"><p>If the code or the explanation is mistaken, I would like to be corrected.  Ditto if you can suggest a better or more accurate mechanism for extracting the values or can suggest other variables that would help significantly.  <a href="mailto:hjmangalam@gmail.com?subject=profilemyjobs%20suggestion">Just send me a quick email</a></p></div>
+<div class="sect2">
+<h3 id="_sec">6.1. # sec</h3>
+<div class="paragraph"><p>The number of seconds since the start of the recording.  This number is not affected by the variable timing of the looping thru the recording. ie if you asked for a period of 5s, the loop timing will be approximately 5s, but this number is the ACTUAL number of seconds since the start by querying <em>date +%s</em>.</p></div>
+</div>
+<div class="sect2">
+<h3 id="userpids">6.2. # user PIDs <sup>*</sup></h3>
+<div class="paragraph"><p>The count of the number of USER processes that <em>ps</em> returns:</p></div>
+<div class="listingblock">
+<div class="content monospaced">
+<pre>ps -ew -o uname,pcpu,pmem | grep ^$user | wc -l</pre>
+</div></div>
+</div>
+<div class="sect2">
+<h3 id="_cpu_cores_sup_sup">6.3. CPU Cores <sup>*</sup></h3>
+<div class="paragraph"><p>(Ttl User cores) The sum of all the <em>top</em>-averaged CPU processes owned by the USER</p></div>
+<div class="listingblock">
+<div class="content monospaced">
+<pre>top -b -n 1 -u $user | grep $user | sed -e 's/^[[:space:]]*//' | scut -f=8 | awk '{s+=$0}END{print s}'</pre>
+</div></div>
+<div class="paragraph"><p>This value is often different that what <em>ps</em> returns since <em>ps</em> returns the average CPU use of the process over its lifetime, so it is a much longer term average. The value that <em>top</em> returns is averaged over its cycle time, usually 2s, so it is much closer to a real-time value.  Obviously in true real-time, a process is either executing or not executing, so this value integrates on-CPU time over the <em>top</em> cycle.</p></div>
+</div>
+<div class="sect2">
+<h3 id="_mean_cpu_sup_sup">6.4. Mean CPU  <sup>*</sup></h3>
+<div class="paragraph"><p>(User Avg %CPU) Indicates the average CPU usage of all user processes over their lifetimes, as opposed to <em>CPU Cores</em> above.  See the differences noted there about how these 2 values differ.</p></div>
+<div class="listingblock">
+<div class="content monospaced">
+<pre>ps -ew -o uname,pcpu,pmem --sort=-pcpu,+pmem | grep $user | scut -f=1 | grep -v '0.0' | stats --gfmt 2&gt; /dev/null | grep Mean | scut -f=1</pre>
+</div></div>
+</div>
+<div class="sect2">
+<h3 id="_total_urssg_sup_sup">6.5. Total uRSSG <sup>*</sup></h3>
+<div class="paragraph"><p>(User RSS) The total <a href="https://en.wikipedia.org/wiki/Resident_set_size">Resident Set Size (RSS)</a> of USER-owned processes.</p></div>
+<div class="listingblock">
+<div class="content monospaced">
+<pre>ps -ew -o uname,pcpu,rss --sort=-pcpu,+rss | grep $user | scut -f=2 | awk '{s+=$0}END{print s}'</pre>
+</div></div>
+<div class="paragraph"><p>This is a useful (but confusing) estimate of how much RAM a process is using. Confusing since utilities like <em>top</em> use various estimates of how much RAM a process is using.  <em>RSS</em> is perhaps the most useful, but there is also the <em>Virtual</em> memory (<em>VIRT</em> in the <em>top</em> display. The <em>top</em> man page describes this value as including "all code, data and shared libraries plus pages that have  been  swapped out and pages that have been mapped but not used."  In other words, any memory space that could possibly be related to the process.
+The last estimate of a process' memory usage is the <em>Shared</em> memory (<em>SHR</em> in <em>top</em>) which is "the amount of shared memory available to a task, not all of which is typically resident. It simply reflects memory that could be  potentially shared with other processes."  In other words, the space that could be addressed by the use of shared libraries (libXX.so) or the <em>potential</em> memory that could be used.</p></div>
+<div class="paragraph"><p>So &#8230; <em>RSS</em> is probably the best estimate for how much RAM is directly dedicated to your process.</p></div>
+<div class="paragraph"><p>Note that if you&#8217;re running <em>profilemyjobs</em> for the root user, there may be literally thousands of
+processes, some of which have zero effective RSS size.  Those PIDs are excluded from the RSS
+calculation because it takes too long to cycle thru them all, but they are counted in the <a href="#userpids">total user PID count</a>.</p></div>
+<div class="admonitionblock">
+<table><tr>
+<td class="icon">
+<img src="./images/icons/note.png" alt="Note">
+</td>
+<td class="content">
+<div class="title">Linux is smart about RAM.</div>
+<div class="paragraph"><p>It may often look like you have very little RAM left, even on very large-memory nodes.  The reason for this is that Linux (and all modern OSs) has decided that RAM is very expensive and it should be working as much possible.  See this quick (if incomplete) read about <a href="https://www.linuxatemyram.com/">how Linux uses RAM</a>.</p></div>
+<div class="paragraph"><p>Therefore, the system silicon memory (aka RAM) is also doing lots of smart things under the covers to maximize the efficiency of the system overall.</p></div>
+<div class="paragraph"><p>In addition to using some RAM to run system and user processes, Linux is also using some as a <strong>filecache</strong> which keeps chunks of recently read files in RAM in case they&#8217;re needed again.  This is obvious when you time an operation the first time and then repeat the same operation.  The second time it&#8217;s MUCH faster, since a lot of the file is already in RAM.</p></div>
+<div class="paragraph"><p>Linux is also using some of the RAM for <strong>other buffers</strong> related to other IO. In <em>top</em>, this value is called <em>buffers</em>. Recent versions of <em>top</em> now combine the <em>filecache</em> and <em>buffer</em> terms into one value called <em>buff/cache</em>.</p></div>
+<div class="paragraph"><p>And finally, the typically half the system RAM can be used as temporary filesystem (called <em>/dev/shm</em> much like <em>/tmp</em> or <em>/scratch</em>, but much, MUCH faster).  As on <em>/tmp</em>, you can make your own directories on /dev/shm, but be sure to delete those files as soon as you&#8217;re done to allow that RAM to service other requests.</p></div>
+</td>
+</tr></table>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_tmem_gb">6.6. Tmem,GB</h3>
+<div class="paragraph"><p>These values provide estimates of the <em>used</em> and <em>free</em> system RAM, based on the descriptions above and converted to GB from their native KB.  Both use data from
+<em>/proc/meminfo</em>.</p></div>
+<div class="sect3">
+<h4 id="_used">6.6.1. used</h4>
+<div class="listingblock">
+<div class="content monospaced">
+<pre>memtotal=`grep MemTotal /proc/meminfo | scut -f=1
+echo "scale=2;${memtotal}-${tmemfree}" | /usr/bin/bc</pre>
+</div></div>
+</div>
+<div class="sect3">
+<h4 id="_free_sup_sup">6.6.2. free  <sup>*</sup></h4>
+<div class="paragraph"><p>(Free RAM)</p></div>
+<div class="listingblock">
+<div class="content monospaced">
+<pre>grep MemFree /proc/meminfo | scut -f=1</pre>
+</div></div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="swapused">6.7. swap used <sup>*</sup></h3>
+<div class="paragraph"><p><em>swap</em> is a mechanism where stale data residing in silicon RAM is written to disk to free up RAM for other processses that need it more urgently.  See <a href="https://en.wikipedia.org/wiki/Paging">paging</a>.  This variable shows how much swap is actually  used, since sometimes swap is used previously and then that data becomes stale and is not ejected from the swap partition.</p></div>
+<div class="paragraph"><p>In an HPC context, if this value increases thr the course of the run, it implies that the system RAM is full and the processes running may effectively halt since accessing data from disk is 5-7 <em>orders of magnitude</em> slower than from RAM.  Hence any increase in use of swap space is a reason for concern.  You can usually map your RAM use to the system RAM to see if it&#8217;s YOUR processes that are responsible for driving the computer into swap.  Note that due to the way jobs are scheduled, it&#8217;s impossible to predict how much RAM <em>ALL processes</em> will take up.  If you requested a minimum  amount of RAM for your job, that RAM will be free <em>at the start of your job</em>, but there&#8217;s no guarantee that it will be free DURING your job run.  This may be possible to address with a new scheduler in the next cluster, but it won&#8217;t happen soon.</p></div>
+<div class="listingblock">
+<div class="content monospaced">
+<pre>cat /proc/swaps | grep -v Used | scut -f=3</pre>
+</div></div>
+</div>
+<div class="sect2">
+<h3 id="_tmp_used_sup_sup">6.8. % /tmp used  <sup>*</sup></h3>
+<div class="paragraph"><p>(/tmp used) <em>/tmp</em> (aka <em>/scratch</em>) is a partition of the local disk storage (Solid State or spinning disk) that is dedicated to temporary data.  It can be written to by normal users and there are a lot of programs that use it to store such data in the course of a run.  Should it reach 100% full, many programs will either crash or simply lock up, waiting for space to free up.</p></div>
+<div class="paragraph"><p>Hence in the HPC context, if you see the <em>/tmp</em> space increase quickly, send the HPC admins a quick email to seeif they can quickly delete some of the mess left by a previous user who probably didn&#8217;t clean up after themselves.</p></div>
+<div class="listingblock">
+<div class="content monospaced">
+<pre>read -r tottmp freetmp &lt;&lt;&lt; `df -h / | grep dev | scut --od=" " -f='1 2' | tr -d 'G'`</pre>
+</div></div>
+</div>
+<div class="sect2">
+<h3 id="_loadavg">6.9. loadavg</h3>
+<div class="paragraph"><p><a href="https://en.wikipedia.org/wiki/Load_(computing)">Load</a> on a computer is not simply the amount of CPU that is being consumed as is widely assumed.  Rather, it is a measure how many processes want access to a CPU core.  The following variables</p></div>
+<div class="listingblock">
+<div class="content monospaced">
+<pre>read -r load1m rprocs tprocs&lt;&lt;&lt; `cat /proc/loadavg | cut -f1,4 -d " " | tr '/' ' '`</pre>
+</div></div>
+<div class="sect3">
+<h4 id="_1m_sup_sup">6.9.1. 1m <sup>*</sup></h4>
+<div class="paragraph"><p>(1m LoadAvg) This is the <em>load1m</em> variable above (the load average over 1 minute), the most responsive measure of that variable.</p></div>
+</div>
+<div class="sect3">
+<h4 id="_exec">6.9.2. exec</h4>
+<div class="paragraph"><p>This variable (<em>rprocs</em> above) is the number of processed executing real-time.  As such, it should never be higher than the number of CPU cores, tho with HyperThreading (HT) turned on, it can be as high as 2 times the number of physical cores, since many modern CPUs (mis)represent themselves as having the HT number of cores.</p></div>
+</div>
+<div class="sect3">
+<h4 id="_tot">6.9.3. tot</h4>
+<div class="paragraph"><p>This is the <em>tprocs</em> variable above, which indicates the total number of processes needing a core to execute on.  It&#8217;s another proxy for how busy the system is.</p></div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_system_io">6.10. System IO</h3>
+<div class="paragraph"><p>These numbers refer to the amount of data the system (ALL processes) is ingesting or emitting at the time of the query.  This number is typically higher than the network data values below since it often includes network data via NFS or other network storage.  However especially if your application is using <em>/tmp</em> heavily, this number will rise <strong>much</strong> higher and these values can help discover if your bottleneck is the saturation of the local storage (if it&#8217;s a single disk, about 100MB/s).</p></div>
+<div class="paragraph"><p>Note that for this command to work for normal users, <em>iotop</em> has to be made <em>suid</em> via sudo.  Otherwise, it&#8217;s a root-restricted command, since its use can leak information about filenames of other users.  Check with your local admins about this.  We have enabled it for a restricted set of users via an <em>iotop</em> group.</p></div>
+<div class="paragraph"><p>You can similarly enable this on your system via a mod of the sudoers file.
+Enter the  following line into the <em>/etc/sudoers</em> file:</p></div>
+<div class="listingblock">
+<div class="content monospaced">
+<pre>..
+%iotop ALL=(root) NOPASSWD: /usr/sbin/iotop
+..</pre>
+</div></div>
+<div class="paragraph"><p>The values <em>in</em> and <em>out</em> are derived from the following command:</p></div>
+<div class="listingblock">
+<div class="content monospaced">
+<pre>read -r ttlrd ttlwr &lt;&lt;&lt;$(sudo iotop -qq -o -n 1 -P -k -b  -u $user | tr ':' ' '| tee $iotmp | grep Tota[l] | scut -f='3 9')</pre>
+</div></div>
+<div class="paragraph"><p>(Note that the output of iotop is <em>tee</em>-saved to a temp file called "$iotop" for later processing.  Call it <em>iotmp</em> if you are trying to replicate the command.)</p></div>
+<div class="sect3">
+<h4 id="_in">6.10.1. in</h4>
+<div class="paragraph"><p>This variable is the <em>ttlrd</em> above.</p></div>
+</div>
+<div class="sect3">
+<h4 id="_out">6.10.2. out</h4>
+<div class="paragraph"><p>This variable is the <em>ttlwr</em> above.</p></div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_total_user_io">6.11. Total User IO</h3>
+<div class="paragraph"><p>These numbers reference the amount of IO that the user&#8217;s processes are performing, separate from the total system IO reported above, but they use the same data saved to <em>$iotmp</em>.</p></div>
+<div class="sect3">
+<h4 id="_in_sup_sup">6.11.1. in <sup>*</sup></h4>
+<div class="paragraph"><p>(User Read) The sum of USER reads from <em>$iotmp</em>.</p></div>
+<div class="listingblock">
+<div class="content monospaced">
+<pre>grep -v DISK $iotmp | sed -e 's/^[[:space:]]*//' | scut -f=3 | awk '{s+=$0}END{print s}'</pre>
+</div></div>
+</div>
+<div class="sect3">
+<h4 id="_out_sup_sup">6.11.2. out <sup>*</sup></h4>
+<div class="paragraph"><p>(User Write) The sum of USER writes from <em>$iotmp</em>.</p></div>
+<div class="listingblock">
+<div class="content monospaced">
+<pre>grep -v DISK $iotmp | sed -e 's/^[[:space:]]*//' | scut -f=5 | awk '{s+=$0}END{print s}'</pre>
+</div></div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="userswap">6.12. User swap <sup>*</sup></h3>
+<div class="paragraph"><p>This value shows the instantaneous amount of swapping by the USER processes. ie: if the swap value above is increasing, but this value is not showing up in the log, then your application is not to blame; something else is causing the paging to happen.</p></div>
+<div class="listingblock">
+<div class="content monospaced">
+<pre>grep -v DISK $iotmp | sed -e 's/^[[:space:]]*//' | scut -f=7 | awk '{s+=$0}END{print s}'</pre>
+</div></div>
+</div>
+<div class="sect2">
+<h3 id="_average_iowait_sup_sup">6.13. Average IOwait% <sup>*</sup></h3>
+<div class="paragraph"><p>(Av IOWait) This is one of the most important values to watch since it indicates that a process is waiting for data to be read or written. This is one of the signals that your application is IO-bound, so watch for the IOwait symbol to show up.  (The actual symbol will differ, depending on the version of gnuplot your system has, but the legend will show it).</p></div>
+<div class="listingblock">
+<div class="content monospaced">
+<pre>grep -v DISK $iotmp | sed -e 's/^[[:space:]]*//' | scut -f=9 | stats 2&gt; /dev/null | grep Mean | scut -f=1</pre>
+</div></div>
+</div>
+<div class="sect2">
+<h3 id="_n">6.14. N</h3>
+<div class="paragraph"><p>This value simply represents the number of USER processes that are currently engaged in measurable IO.  If a process is not doing IO (ie, it&#8217;s computing on data already in RAM), it will not show up here.</p></div>
+<div class="listingblock">
+<div class="content monospaced">
+<pre>grep -v DISK $iotmp | sed -e 's/^[[:space:]]*//' | scut -f=9 | stats 2&gt; /dev/null | grep Number | scut -f=1</pre>
+</div></div>
+</div>
+<div class="sect2">
+<h3 id="_net">6.15. net</h3>
+<div class="paragraph"><p>These network numbers have an increasingly large role in research computing, especially in a cluster context where most data resides on network data devices, from single RAID NAS servers to parallel distributed filesytems like BeeGFS and Lustre.  This is made more complicated because the native transport of the latter filesystems is often over <a href="https://en.wikipedia.org/wiki/Remote_direct_memory_access">Remote Direct Memory Access (RDMA)</a>, using native Infiniband packets which do not show up in most networking utility measurements (because they&#8217;re not TCP packets).  So I&#8217;ve used different utilities to capture both TCP and RDMA traffic in this log.</p></div>
+<div class="paragraph"><p><em>profilemyjobs</em> will only monitor 1 network interface, but will attempt to measure both TCP and RDMA data on that interface.</p></div>
+<div class="paragraph"><p>TCP IO is read simultaneously the output of <em>ifstat</em>.</p></div>
+<div class="listingblock">
+<div class="content monospaced">
+<pre>read -r netin netout &lt;&lt;&lt; `ifstat -i $IFACE -t 1 1 | tail -1 | scut -f="1 2"`</pre>
+</div></div>
+<div class="sect3">
+<h4 id="_tcp_in_sup_sup">6.15.1. TCP in <sup>*</sup></h4>
+<div class="paragraph"><p>TCP incoming is the <em>netin</em> variable above.</p></div>
+</div>
+<div class="sect3">
+<h4 id="_tcp_out_sup_sup">6.15.2. TCP out  <sup>*</sup></h4>
+<div class="paragraph"><p>TCP outgoing is the <em>netout</em> variable above.</p></div>
+</div>
+<div class="sect3">
+<h4 id="_rdma_in_out_sup_sup">6.15.3. RDMA in / out <sup>*</sup></h4>
+<div class="paragraph"><p>The RDMA stats are generated by repeated calls to perfquery before and after the wait period.</p></div>
+<div class="listingblock">
+<div class="content monospaced">
+<pre>RBX=`perfquery -x  | grep XmitData | cut -f2 -d: | sed -e 's/\.*//g'`;
+RBR=`perfquery -x  | grep RcvData  | cut -f2 -d: | sed -e 's/\.*//g'`;
+sleep $PERIOD
+RAX=`perfquery -x  | grep XmitData | cut -f2 -d: | sed -e 's/\.*//g'`;
+RAR=`perfquery -x  | grep RcvData  | cut -f2 -d: | sed -e 's/\.*//g'`;
+XMIT_RDMABW=`echo "scale=4; ($RAX-$RBX)/256/$PERIOD" | bc`; # KB/s (see man perfquery)
+RECV_RDMABW=`echo "scale=4; ($RAR-$RBR)/256/$PERIOD" | bc`; # KB/s</pre>
+</div></div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_local_time">6.16. Local_Time</h3>
+<div class="paragraph"><p>This is simply a call to <em>date</em> to enable matching the runtime to other log events.</p></div>
+<div class="listingblock">
+<div class="content monospaced">
+<pre>datestmp=`date +"%a_%T"`</pre>
+</div></div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_but_why_not_8230">7. But why not &#8230;</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="_open_xdmod">7.1. Open XDMoD</h3>
+<div class="paragraph"><p><a href="https://open.xdmod.org/7.5/index.html">Open XDMoD</a> is infrastructurification of simple utility like <em>profilemyjobs</em>.  It requires a few days to install and debug and then careful care and feeding to keep it running.  One of our sysadmins (Imam Toufique) installed it over the course of several days on our cluster and while parts of it work and it provides a comforting interface, the parts that we need for doing what <em>profilemyjobs</em> does, don&#8217;t, hence on to other, simpler options.  The parts are available, such as CPU usage, Memory usage, network usage, etc, are also shown in separate panes that are not viewable simultaneously, so that discovering the interaction among them is difficult.  It does have some cluster-wide tools for profiling jobs running over multiple nodes that <em>profilemyjobs</em> can&#8217;t show without starting it simultaneously on multiple nodes.</p></div>
+<div class="paragraph"><p>In short, it does a lot more than <em>profilemyjobs</em>, but <em>profilemyjobs</em> is arguably better at doing the things that it is meant to do, and it does them much more simply.</p></div>
+</div>
+<div class="sect2">
+<h3 id="_performance_copilot">7.2. Performance CoPilot</h3>
+<div class="paragraph"><p><a href="https://pcp.io/index.html">Performance CoPilot</a> (PCP) is what would result if I had OCD and dedicated the best part of the next couple of years to improving and optimizing <em>profilemyjobs</em>.  <em>PCP</em> came out of SGI and I have to admit it&#8217;s a pretty amazing system.  You can pick and choose a bazillion variables to record and visualize.  The problem then becomes: what do all these variables mean and how do you visualize them meaningfully within a timeframe that allows you to do work other than become a <em>PCP</em> expert.  Consider <em>profilemyjobs</em> the very much lighter-weight and easier-to-use little brother of <em>PCP</em>.  Also, while <em>PCP</em> has a stripchart visualizer, it&#8217;s not nearly as feature-complete as gnuplot.  It does have APIs for <a href="https://grafana.com/">Grafana</a> and a host of other toolkits and languages, so it theoretically could be used to create custom visualizations that are quite beautiful.</p></div>
+<div class="paragraph"><p>It is also used now by <em>XDMoD</em> (see above) and so endows <em>XDMoD</em> with some simple performance extracts &amp; features.</p></div>
+<div class="paragraph"><p>It can also consume logs from SAR (see below) and some other system loggers. It&#8217;s a very powerful and sophisticated system; perhaps too complex for mere human users.</p></div>
+</div>
+<div class="sect2">
+<h3 id="_sar_amp_ksar_ksar2">7.3. SAR &amp; ksar/ksar2</h3>
+<div class="paragraph"><p><em>SAR</em> is part of the systat package and produces performance logs in a similar vein as <em>profilemyjobs</em> and <em>PCP</em>.
+It is aimed at whole system performance and not so much at user-specific performance.</p></div>
+<div class="paragraph"><p><a href="https://sourceforge.net/projects/ksar/">ksar</a> (now a dead project; couldn&#8217;t get it to work) and <a href="https://github.com/ppalucha/ksar2">ksar2</a> (a ksar fork) are Java-based systems for visualizing the <em>SAR</em> logs and suffer from the <em>values in separate windows</em> problem that is used in <em>XDMoD</em> and <em>Remora</em> below.  They do have a nice interface which allows you to select variables to view interactively.</p></div>
+</div>
+<div class="sect2">
+<h3 id="_remora">7.4. Remora</h3>
+<div class="paragraph"><p><a href="https://github.com/TACC/remora">Remora</a>, from the <a href="https://www.tacc.utexas.edu/">Texas Advanced Computing Center</a> is a system profiler like the others and differs mostly in that it collects information during a run and then generates HTML pages and graphics that a user can view in a browser.  That&#8217;s a very good approach, but the output is static, is available only after the run, and appears in separate pages, one per variable, so it&#8217;s difficult to integrate the information into a whole.  <em>Remora</em> may be a spinoff or a variant or development fork of the <a href="https://github.com/TACC/tacc_stats">tacc_stats</a> cluster profiling system.</p></div>
+</div>
+</div>
+</div>
+</div>
+<div id="footnotes"><hr></div>
+<div id="footer">
+<div id="footer-text">
+Version 1.1.2<br>
+Last updated
+ 2018-09-06 21:30:23 PDT
+</div>
+</div>
+</body>
+</html>
